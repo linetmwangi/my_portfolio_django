@@ -64,6 +64,14 @@
 
     <main class="container mt-4">
         <h1>Contact List</h1>
+         {% if messages %}
+            {% for message in messages %}
+                <div class="alert {% if message.tags %}alert-{{ message.tags }}{% else %}alert-info{% endif %}">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+
         <a href="{% url 'contact_create' %}" class="btn btn-primary mb-3">Create Contact</a>
         <table class="table table-striped">
             <thead>
@@ -72,6 +80,7 @@
                     <th>Name</th>
                     <th>Email</th>
                     <th>Phone</th>
+                    <th>message</th>
                     <th>Actions</th>
                 </tr>
             </thead>
@@ -82,6 +91,7 @@
                     <td>{{ contact.name }}</td>
                     <td>{{ contact.email }}</td>
                     <td>{{ contact.phone }}</td>
+                    <td>{{ contact.message}}</td>
                     <td>
                         <a href="{% url 'contact_update' contact.id %}" class="btn btn-info btn-sm">Edit</a>
                         <form action="{% url 'contact_delete' contact.id %}" method="post" class="d-inline">

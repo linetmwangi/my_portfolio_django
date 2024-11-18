@@ -9,25 +9,30 @@ def contact_view(request):
         if form.is_valid():
             form.save()
             messages.success(request, 'Your message has been sent successfully.')
-            return redirect('contact.html')
+            return redirect('contact')
         else:
             messages.error(request, "please correct the error below.")
     else:
         form = ContactForm()
-    return render(request, 'contact.html', {'form': form})
+    return render(request, 'contact', {'form': form})
 
 def contact_list(request):
     contacts = Contact.objects.all()
     return render(request, 'contact_list.html', {'contacts': contacts})
 
+
 def contact_create(request):
-    if request.method == 'POST':
+    if request.method == "POST":
         form = ContactForm(request.POST)
         if form.is_valid():
-            form.save()
-            return redirect('contact_list')
+            contact = form.save()  # Save the contact to the database
+            messages.success(request, f"Contact '{contact.name}' was created successfully!")
+            return redirect('contact_list')  # Replace with your contact list URL name
+        else:
+            messages.error(request, "There was an error creating the contact. Please try again.")
     else:
         form = ContactForm()
+
     return render(request, 'contact_form.html', {'form': form})
 
 def contact_update(request, pk):
@@ -35,7 +40,8 @@ def contact_update(request, pk):
     if request.method == 'POST':
         form = ContactForm(request.POST, instance=contact)
         if form.is_valid():
-            form.save()
+            contact = form.save()
+            messages.success(request, f"Contact '{contact.name}' was updated successfully!")
             return redirect('contact_list')
     else:
         form = ContactForm(instance=contact)
@@ -43,8 +49,11 @@ def contact_update(request, pk):
 
 def contact_delete(request, pk):
     contact = get_object_or_404(Contact, pk=pk)
-    if request.method == 'POST':
+    if request.method == "POST":
+        contact_name = contact.name
         contact.delete()
-        messages.success(request, 'Your contact has been deleted successfully.')
+        messages.success(request, f"The contact '{contact_name}' has been deleted successfully!")
         return redirect('contact_list')
     return render(request, 'contact_confirm_delete.html', {'contact': contact})
+
+
